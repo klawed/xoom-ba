@@ -103,13 +103,13 @@ If you prefer the classic interface:
 
 ## Step 3: Install Required Libraries
 
-### Using Library Manager (Recommended)
+### Libraries Available in Library Manager
 
 1. **Open Library Manager**
    - **Arduino IDE 2.x**: Click library icon in sidebar or Tools → Manage Libraries
    - **Arduino IDE 1.8.x**: Sketch → Include Library → Manage Libraries
 
-2. **Install Core Libraries** (search and install each):
+2. **Install These Libraries** (search and install each):
 
    **Display Libraries:**
    - `Adafruit SSD1306` by Adafruit (version 2.5.0+)
@@ -120,32 +120,41 @@ If you prefer the classic interface:
    - `Adafruit BME280 Library` by Adafruit (version 2.2.0+)
    - `Adafruit Unified Sensor` by Adafruit (auto-installed with above)
 
-   **Network & JSON Libraries:**
+   **JSON Library:**
    - `ArduinoJson` by Benoit Blanchon (version 6.19.0+)
-   - `ESPAsyncWebServer` by me-no-dev (version 1.2.3+)
-   - `AsyncTCP` by me-no-dev (version 1.1.1+)
 
-3. **Installation Process for Each Library:**
-   ```
-   1. Search for library name
-   2. Click on the correct library (check author)
-   3. Select latest compatible version
-   4. Click "Install"
-   5. Install dependencies when prompted
-   ```
+### ⚠️ Manual Installation Required
 
-### Manual Library Installation (If Needed)
+**Important**: The following libraries are **NOT** available in the Library Manager and must be installed manually:
 
-If a library isn't available in the Library Manager:
+#### ESPAsyncWebServer Installation
 
-1. **Download Library ZIP**
-   - Go to the library's GitHub page
+1. **Download ESPAsyncWebServer**
+   - Go to: [https://github.com/me-no-dev/ESPAsyncWebServer](https://github.com/me-no-dev/ESPAsyncWebServer)
    - Click "Code" → "Download ZIP"
+   - Save as `ESPAsyncWebServer-master.zip`
 
-2. **Install ZIP Library**
-   - Arduino IDE: Sketch → Include Library → Add .ZIP Library
-   - Select the downloaded ZIP file
-   - Library will be installed automatically
+2. **Download AsyncTCP (Required Dependency)**
+   - Go to: [https://github.com/me-no-dev/AsyncTCP](https://github.com/me-no-dev/AsyncTCP)
+   - Click "Code" → "Download ZIP"
+   - Save as `AsyncTCP-master.zip`
+
+3. **Install Both Libraries**
+   ```
+   1. In Arduino IDE: Sketch → Include Library → Add .ZIP Library
+   2. Select AsyncTCP-master.zip FIRST
+   3. Go to Sketch → Include Library → Add .ZIP Library again
+   4. Select ESPAsyncWebServer-master.zip
+   5. Restart Arduino IDE
+   ```
+
+4. **Verify Installation**
+   - Go to Sketch → Include Library
+   - You should see both "AsyncTCP" and "ESPAsyncWebServer" listed
+
+### Alternative: Use Standard WebServer
+
+If you have issues with the async libraries, you can modify the code to use the built-in WebServer library instead. See `docs/missing-libraries.md` for details.
 
 ## Step 4: Configure ESP32 Development Environment
 
@@ -255,7 +264,24 @@ sudo usermod -a -G dialout $USER
    }
    ```
 
-2. **Upload and verify WiFi networks are detected**
+2. **Test Async Libraries**
+   ```cpp
+   #include <ESPAsyncWebServer.h>
+   #include <AsyncTCP.h>
+   
+   AsyncWebServer server(80);
+   
+   void setup() {
+     Serial.begin(115200);
+     Serial.println("Async library test - compile only");
+   }
+   
+   void loop() {
+     delay(1000);
+   }
+   ```
+
+3. **Upload and verify everything compiles without errors**
 
 ## Step 6: Download XOOM-BA Code
 
@@ -298,10 +324,22 @@ cd xoom-ba
 **Solutions:**
 ```
 1. Verify library installation in Library Manager
-2. Check library compatibility with ESP32
-3. Update Arduino IDE and ESP32 core
-4. Clear Arduino cache: Close IDE, delete temp folders
-5. Reinstall problematic libraries
+2. For async libraries, ensure manual installation was done correctly
+3. Check library compatibility with ESP32
+4. Update Arduino IDE and ESP32 core
+5. Clear Arduino cache: Close IDE, delete temp folders
+6. Reinstall problematic libraries
+```
+
+#### ESPAsyncWebServer Issues
+**Problem**: "ESPAsyncWebServer.h: No such file or directory"
+
+**Solutions:**
+```
+1. Follow manual installation steps in Step 3
+2. Install AsyncTCP before ESPAsyncWebServer
+3. Restart Arduino IDE after installation
+4. See docs/missing-libraries.md for detailed troubleshooting
 ```
 
 #### Upload Failures
@@ -332,6 +370,7 @@ sudo chmod 666 /dev/ttyUSB0
 - **Arduino Forum**: [forum.arduino.cc](https://forum.arduino.cc)
 - **ESP32 Community**: [esp32.com](https://esp32.com)
 - **XOOM-BA Issues**: [GitHub Issues](https://github.com/klawed/xoom-ba/issues)
+- **Missing Libraries Guide**: See `docs/missing-libraries.md`
 
 ## Advanced Configuration
 
